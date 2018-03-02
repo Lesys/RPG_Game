@@ -1,5 +1,7 @@
 #define NB_CHARACTER_POSSIBLE 3
 #define LENGTH_MAX_NAME_CHARACTER 10
+#define LENGTH_MAX_NICKNAME_CHARACTER 20
+#define NAME_FILE_CHARACTER_SAVE "character_save.sav"
 
 Character* CreateCharacter(Character*);
 Character* CopyCharacter(Character* c_org, Character* c_cpy);

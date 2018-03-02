@@ -4,8 +4,8 @@ void Error(int err) {
 	switch(err) {
 		case 1: printf("Pointer NULL\n");
 			break;
-		/*case 2: printf("Pointer NULL\n");
-			break;*/
+		case 2: printf("Character not saved\n");
+			break;
 		case 3: printf("There is a stat on 0\n");
 			break;
 		/*case 1: printf("Pointer NULL\n");
