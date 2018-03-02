@@ -6,6 +6,7 @@ char* character_sheet = "character_sheet.sav";
 // Create a new character (if a character is in parameter, copy this one. else, create a new one)
 Character* CreateCharacter(Character* c) {
 	Character* c_new = (Character*)malloc(sizeof(Character));
+	c_new->name = (char*)malloc(sizeof(char) * LENGTH_MAX_NICKNAME_CHARACTER);
 	if (c) { // If the pointer is not NULL ==> Copy the character in the new one
 		c_new = CopyCharacter(c, c_new);
 	}
@@ -134,7 +135,8 @@ Character* ImplementStats(Character* c, int str, int intel, int def, int def_mag
 // Display all stats from the character
 // MDF == Magical defense
 void DisplayCharacter(Character* c) {
-	printf("Here is your character:\n\nLVL: %d\nSTR: %d\nINT: %d\nDEF: %d\nMDF: %d\n", c->lvl, c->str, c->intel, c->def, c->def_mag);
+	printf("Here is your character:\n\nNAME: %s\nLVL: %d\nHP: %d/%d, MP: %d/%d\nSTR: %d\nINT: %d\nDEF: %d\nMDF: %d\n",
+		c->name, c->lvl, c->hp, c->hp_max, c->mp, c->mp_max,	c->str, c->intel, c->def, c->def_mag);
 }
 
 int SaveCharacter(Character* c) {	
@@ -152,11 +154,11 @@ int SaveCharacter(Character* c) {
 		}
 
 		if (response == 'Y' || response == 'y') {
-			printf("Chose a name for your character");
+			printf("Chose a name for your character: ");
 			scanf("%s", c->name);
 
-			while (IsNameExist(c->name)) { // Check if the name is already in the file
-				printf("The name is already used, chose another one");
+			while (!c->name && IsNameExist(c->name)) { // Check if the name is already in the file
+				printf("The name is already used, chose another one: ");
 				scanf("%s", c->name);
 			}
 
@@ -205,10 +207,12 @@ int SaveInFile(Character* c) {
 
 	if (f_character) {
 		// Writing the name of the character, the type, lvl, current hp, hp_max, current mp, mp_max, str, int, def and mdf
-		fprintf(f_character, "%[^\n]:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d", c->name, c->type, c->lvl, c->hp, c->hp_max, c->mp, c->mp_max, c->str, c->intel, c->def, c->def_mag);
+		fprintf(f_character, "%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d", c->name, c->type, c->lvl, c->hp, c->hp_max, c->mp, c->mp_max, c->str, c->intel, c->def, c->def_mag);
 	}
 	else
 		return_fonction = 0;
+
+	return return_fonction;
 }
 
 int IsNameExist(char* name) {
@@ -217,7 +221,7 @@ int IsNameExist(char* name) {
 	FILE* f_character = fopen(NAME_FILE_CHARACTER_SAVE, "r");
 
 	if (f_character) {
-		while (!return_fonction && scanf(f_character, "%s:", name_in_file)) {
+		while (!return_fonction && fscanf(f_character, "%s:", name_in_file)) {
 			if (!strcmp(name, name_in_file)) // If same string
 				return_fonction = 1;
 		}

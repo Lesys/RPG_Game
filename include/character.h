@@ -10,3 +10,6 @@ Character* CreatingCharacter(int, Character*);
 Character* ImplementStats(Character* c, int str, int intel, int def, int def_mag, int hp_max, int mp_max, int type);
 void DisplayCharacter(Character*);
 int SaveCharacter(Character*);
+int RestoreFromFile();
+int SaveInFile(Character*);
+int IsNameExist(char*);
