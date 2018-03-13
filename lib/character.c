@@ -5,8 +5,8 @@ char* character_sheet = "character_sheet.sav";
 
 // Create a new character (if a character is in parameter, copy this one. else, create a new one)
 Character* CreateCharacter(Character* c) {
-	Character* c_new = (Character*)malloc(sizeof(Character));
-	c_new->name = (char*)malloc(sizeof(char) * LENGTH_MAX_NICKNAME_CHARACTER);
+	Character* c_new = InitCharacter();
+
 	if (c) { // If the pointer is not NULL ==> Copy the character in the new one
 		c_new = CopyCharacter(c, c_new);
 	}
@@ -43,7 +43,7 @@ Character* CopyCharacter(Character* c_org, Character* c_cpy) {
 		c_cpy->hp_max = c_org->hp_max;
 		c_cpy->mp_max = c_org->mp_max;
 		c_cpy->hp = c_cpy->hp_max;
-		c_cpy->mp_max = c_cpy->mp_max;
+		c_cpy->mp = c_cpy->mp_max;
 
 		// Copy stats
 		c_cpy->str = c_org->str;
@@ -57,6 +57,7 @@ Character* CopyCharacter(Character* c_org, Character* c_cpy) {
 	return c_cpy; // Return NULL if was NULL, else new Character pasted
 }
 
+// Confirming the new character and the class
 Character* NewCharacter(Character* c) {
 	int i, num_char;
 
@@ -110,6 +111,7 @@ Character* CreatingCharacter(int num_char, Character* c) {
 	return c;
 }
 
+// Add the stats to the character
 Character* ImplementStats(Character* c, int str, int intel, int def, int def_mag, int hp_max, int mp_max, int type) {
 	if (c) {
 		if (!str || !intel || !def || !def_mag || !hp_max || !mp_max) // If there is 0 on a stat
@@ -139,6 +141,7 @@ void DisplayCharacter(Character* c) {
 		c->name, c->lvl, c->hp, c->hp_max, c->mp, c->mp_max,	c->str, c->intel, c->def, c->def_mag);
 }
 
+// Asking if the character will be saved
 int SaveCharacter(Character* c) {	
 	char response = '?';
 	int return_fonction = 1;
@@ -157,7 +160,7 @@ int SaveCharacter(Character* c) {
 			printf("Chose a name for your character: ");
 			scanf("%s", c->name);
 
-			while (!c->name && IsNameExist(c->name)) { // Check if the name is already in the file
+			while (!c->name || IsNameExist(c->name)) { // Check if the name is already in the file
 				printf("The name is already used, chose another one: ");
 				scanf("%s", c->name);
 			}
@@ -190,9 +193,11 @@ int RestoreFromFile() {
 	FILE* f_character = fopen(NAME_FILE_CHARACTER_SAVE, "r");
 
 	if (f_character) {
-		int i = 0;
+		//int i = 0;
 		printf("Which character do you want to restore (write the name): ");
 		scanf("%s", nickname);
+
+		fclose(f_character);
 	}
 	else
 		return_fonction = 0;
@@ -207,7 +212,8 @@ int SaveInFile(Character* c) {
 
 	if (f_character) {
 		// Writing the name of the character, the type, lvl, current hp, hp_max, current mp, mp_max, str, int, def and mdf
-		fprintf(f_character, "%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d", c->name, c->type, c->lvl, c->hp, c->hp_max, c->mp, c->mp_max, c->str, c->intel, c->def, c->def_mag);
+		fprintf(f_character, "%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d\n", c->name, c->type, c->lvl, c->hp, c->hp_max, c->mp, c->mp_max, c->str, c->intel, c->def, c->def_mag);
+		fclose(f_character);
 	}
 	else
 		return_fonction = 0;
@@ -215,17 +221,37 @@ int SaveInFile(Character* c) {
 	return return_fonction;
 }
 
+// Searching for a nickname if it exist or not
 int IsNameExist(char* name) {
 	int return_fonction = 0;
-	char* name_in_file = NULL;
+	char* name_in_file = (char*)malloc(sizeof(char) * LENGTH_MAX_NICKNAME_CHARACTER);
 	FILE* f_character = fopen(NAME_FILE_CHARACTER_SAVE, "r");
 
 	if (f_character) {
 		while (!return_fonction && fscanf(f_character, "%s:", name_in_file)) {
+			printf("name_in_file: %s\n", name_in_file);
 			if (!strcmp(name, name_in_file)) // If same string
 				return_fonction = 1;
 		}
+
+		fclose(f_character);
 	}
+	
+	free(name_in_file);
 
 	return return_fonction;
+}
+
+// Free a character
+void FreeCharacter(Character* c) {
+	free(c->name);
+	free(c);
+}
+
+// Initialize a character
+Character* InitCharacter() {
+	Character* c = (Character*) malloc(sizeof(Character));
+	c->name = (char*) malloc(LENGTH_MAX_NICKNAME_CHARACTER * sizeof(char));
+
+	return c;
 }

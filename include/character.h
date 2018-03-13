@@ -13,3 +13,5 @@ int SaveCharacter(Character*);
 int RestoreFromFile();
 int SaveInFile(Character*);
 int IsNameExist(char*);
+Character* InitCharacter();
+void FreeCharacter(Character*);
